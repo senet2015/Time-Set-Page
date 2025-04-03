@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TSP (Time Set Page)</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        h1 {
+            text-align: center;
+        }
+        form {
+            max-width: 400px;
+            margin: 0 auto;
+        }
+        label {
+            display: block;
+            margin: 10px 0 5px;
+        }
+        input[type="time"] {
+            width: 100%;
+            padding: 8px;
+            margin-bottom: 15px;
+        }
+        button {
+            width: 100%;
+            padding: 10px;
+            background-color: #007BFF;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+<body>
+    <h1>TSP (Time Set Page)</h1>
+    <form id="timeForm">
+        <label for="time1">Set Time 1:</label>
+        <input type="time" id="time1" name="time1" required>
+
+        <label for="time2">Set Time 2:</label>
+        <input type="time" id="time2" name="time2" required>
+
+        <button type="submit">Submit Times</button>
+    </form>
+
+    <div id="response" style="text-align: center; margin-top: 20px;"></div>
+
+    <script>
+        const form = document.getElementById('timeForm');
+        const responseDiv = document.getElementById('response');
+
+        form.addEventListener('submit', async (event) => {
+            event.preventDefault();
+
+            const time1 = document.getElementById('time1').value;
+            const time2 = document.getElementById('time2').value;
+
+            // Send the times to the server
+            const response = await fetch('/set-times', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ time1, time2 }),
+            });
+
+            if (response.ok) {
+                responseDiv.textContent = 'Times have been set successfully!';
+            } else {
+                responseDiv.textContent = 'Failed to set times.';
+            }
+        });
+
+        // Fetch the current times from the server
+        async function fetchTimes() {
+            const response = await fetch('/get-times');
+            if (response.ok) {
+                const data = await response.json();
+                document.getElementById('time1').value = data.time1 || '';
+                document.getElementById('time2').value = data.time2 || '';
+            }
+        }
+
+        // Fetch the times on page load
+        fetchTimes();
+    </script>
+</body>
+</html>
